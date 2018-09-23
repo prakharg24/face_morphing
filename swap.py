@@ -6,7 +6,6 @@ import sys
 lis_im1 = []
 lis_im2 = []
 
-alpha = 0.5
 lis_im_m = []
 def draw_circle1(event,x,y,flags,param):
     global mouseX,mouseY
@@ -34,43 +33,30 @@ resized_img2 = cv.resize(img2, (x_dest, y_dest))
 display_img1 = resized_img1.copy()
 display_img2 = resized_img2.copy()
 
-img_mph = np.zeros(resized_img2.shape, dtype = resized_img2.dtype)
+img_mph = resized_img2.copy()
 cv.namedWindow('image1')
 cv.namedWindow('image2')
 cv.setMouseCallback('image1',draw_circle1)
 cv.setMouseCallback('image2',draw_circle2)
-
-# Enter 8 corners of the image
-
-common_list = []
-common_list.append((0, 0))
-common_list.append((0, y_dest//2))
-common_list.append((0, y_dest-1))
-common_list.append((x_dest//2, 0))
-common_list.append((x_dest//2, y_dest-1))
-common_list.append((x_dest-1, 0))
-common_list.append((x_dest-1, y_dest//2))
-common_list.append((x_dest-1, y_dest-1))
-
-lis_im1.extend(common_list)
-lis_im2.extend(common_list)
 
 # Try to do it automatically
 t = 0
 while(t<int(sys.argv[3])):
     cv.imshow('image1',display_img1)
     k = cv.waitKey(0)
-    cv.imshow('image1',display_img1)
+    t += 1
+
+t = 0
+while(t<int(sys.argv[3])):
     cv.imshow('image2',display_img2)
     k = cv.waitKey(0)
-    cv.imshow('image2',display_img2)
     t += 1
 
 
 lis_im = []
 for i in range(len(lis_im1)):
 	lis_im.append(((lis_im1[i][0]+lis_im2[i][0])/2,(lis_im1[i][1]+lis_im2[i][1])/2))
-	lis_im_m.append(((alpha*lis_im1[i][0]+(1-alpha)*lis_im2[i][0]),(alpha*lis_im1[i][1]+(1-alpha)*lis_im2[i][1])))
+	lis_im_m.append((lis_im2[i][0],lis_im2[i][1]))
 
 tri = Delaunay(lis_im)
 
@@ -100,9 +86,22 @@ for triplet in tri.simplices:
 	d_t = cv.warpAffine(img1Rect,trns,(leng[0],leng[1]),None, flags=cv.INTER_LINEAR, borderMode=cv.BORDER_REFLECT_101 )
 	trns = cv.getAffineTransform(np.float32(t2Rect),np.float32(tRect))
 	d_t1 = cv.warpAffine(img2Rect,trns,(leng[0],leng[1]),None, flags=cv.INTER_LINEAR, borderMode=cv.BORDER_REFLECT_101 )
-	img_rec = alpha*d_t + (1-alpha)*d_t1
+	img_rec = d_t
 	img_mph[r[1]:r[1]+r[3], r[0]:r[0]+r[2]] = img_mph[r[1]:r[1]+r[3], r[0]:r[0]+r[2]] * ( 1 - mk ) + img_rec * mk
 
+img_mask = np.zeros(resized_img2.shape, dtype = resized_img2.dtype)
+img_mask = cv.fillConvexPoly(img_mask, np.array(lis_im2), [255, 255, 255])
 
-cv.imshow('det',img_mph)
-cv.waitKey(0)
+cx = 0
+cy = 0
+ttl = 0
+for ele in lis_im2:
+	cx += ele[0]
+	cy += ele[1]
+	ttl += 1
+
+img_swap = cv.seamlessClone(img_mph, resized_img2, img_mask, (int(cx//ttl), int(cy//ttl)), cv.NORMAL_CLONE)
+
+cv.imwrite(sys.argv[4], img_swap)
+# cv.imshow('det',img_mph)
+# cv.waitKey(0)
