@@ -3,8 +3,6 @@ import cv2 as cv
 from scipy.spatial import Delaunay
 import sys
 
-lis_im1 = []
-lis_im2 = []
 
 lis_im_m = []
 def draw_circle1(event,x,y,flags,param):

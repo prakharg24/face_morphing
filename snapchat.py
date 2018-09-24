@@ -3,8 +3,18 @@ import cv2 as cv
 from scipy.spatial import Delaunay
 import sys
 
+with open('abc.txt', 'r') as f:
+	arr = [x.strip().split(" ") for x in f.readlines()]
+
 lis_im1 = []
 lis_im2 = []
+
+for i in range(0, 12):
+	lis_im1.append((int(arr[i][0]), int(arr[i][1])))
+
+for i in range(12, 24):
+	lis_im2.append((int(arr[i][0]), int(arr[i][1])))
+
 
 lis_im_m = []
 def draw_circle1(event,x,y,flags,param):
@@ -27,8 +37,11 @@ img2 = cv.imread(sys.argv[2])
 y_dest = min(img1.shape[0], img2.shape[0])
 x_dest = min(img1.shape[1], img2.shape[1])
 
-resized_img1 = cv.resize(img1, (x_dest, y_dest)) 
-resized_img2 = cv.resize(img2, (x_dest, y_dest))
+# resized_img1 = cv.resize(img1, (x_dest, y_dest)) 
+# resized_img2 = cv.resize(img2, (x_dest, y_dest))
+
+resized_img1 = img1.copy()
+resized_img2 = img2.copy()
 
 display_img1 = resized_img1.copy()
 display_img2 = resized_img2.copy()
@@ -86,22 +99,28 @@ for triplet in tri.simplices:
 	d_t = cv.warpAffine(img1Rect,trns,(leng[0],leng[1]),None, flags=cv.INTER_LINEAR, borderMode=cv.BORDER_REFLECT_101 )
 	trns = cv.getAffineTransform(np.float32(t2Rect),np.float32(tRect))
 	d_t1 = cv.warpAffine(img2Rect,trns,(leng[0],leng[1]),None, flags=cv.INTER_LINEAR, borderMode=cv.BORDER_REFLECT_101 )
-	img_rec = d_t
+	img_rec = np.zeros((d_t.shape))
+	for i in range(0, len(d_t)):
+		for j in range(len(d_t[0])):
+			if(d_t[i][j].all()==0):
+				img_rec[i][j] = d_t1[i][j]
+			else:
+				img_rec[i][j] = d_t[i][j]
 	img_mph[r[1]:r[1]+r[3], r[0]:r[0]+r[2]] = img_mph[r[1]:r[1]+r[3], r[0]:r[0]+r[2]] * ( 1 - mk ) + img_rec * mk
 
-img_mask = np.zeros(resized_img2.shape, dtype = resized_img2.dtype)
-img_mask = cv.fillConvexPoly(img_mask, np.array(lis_im2), [255, 255, 255])
+# img_mask = np.zeros(resized_img2.shape, dtype = resized_img2.dtype)
+# img_mask = cv.fillConvexPoly(img_mask, np.array(lis_im2), [255, 255, 255])
 
-cx = 0
-cy = 0
-ttl = 0
-for ele in lis_im2:
-	cx += ele[0]
-	cy += ele[1]
-	ttl += 1
+# cx = 0
+# cy = 0
+# ttl = 0
+# for ele in lis_im2:
+# 	cx += ele[0]
+# 	cy += ele[1]
+# 	ttl += 1
 
-img_swap = cv.seamlessClone(img_mph, resized_img2, img_mask, (int(cx//ttl), int(cy//ttl)), cv.NORMAL_CLONE)
+# img_swap = cv.seamlessClone(img_mph, resized_img2, img_mask, (int(cx//ttl), int(cy//ttl)), cv.NORMAL_CLONE)
 
-cv.imwrite(sys.argv[4], img_swap)
+cv.imwrite(sys.argv[4], img_mph)
 # cv.imshow('det',img_mph)
 # cv.waitKey(0)
