@@ -3,8 +3,17 @@ import cv2 as cv
 from scipy.spatial import Delaunay
 import sys
 
+# with open('morph.txt', 'r') as f:
+# 	arr = [x.strip().split(" ") for x in f.readlines()]
+
 lis_im1 = []
 lis_im2 = []
+
+# for i in range(0, 12):
+# 	lis_im1.append((int(arr[i][0]), int(arr[i][1])))
+
+# for i in range(12, 24):
+# 	lis_im2.append((int(arr[i][0]), int(arr[i][1])))
 
 alpha = 0.5
 lis_im_m = []

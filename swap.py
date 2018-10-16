@@ -3,6 +3,17 @@ import cv2 as cv
 from scipy.spatial import Delaunay
 import sys
 
+with open('swapRev.txt', 'r') as f:
+	arr = [x.strip().split(" ") for x in f.readlines()]
+
+lis_im1 = []
+lis_im2 = []
+
+for i in range(0, 9):
+	lis_im1.append((int(arr[i][0]), int(arr[i][1])))
+
+for i in range(9, 18):
+	lis_im2.append((int(arr[i][0]), int(arr[i][1])))
 
 lis_im_m = []
 def draw_circle1(event,x,y,flags,param):

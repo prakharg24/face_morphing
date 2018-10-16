@@ -3,16 +3,16 @@ import cv2 as cv
 from scipy.spatial import Delaunay
 import sys
 
-with open('abc.txt', 'r') as f:
+with open('snapchat.txt', 'r') as f:
 	arr = [x.strip().split(" ") for x in f.readlines()]
 
 lis_im1 = []
 lis_im2 = []
 
-for i in range(0, 12):
+for i in range(0, 16):
 	lis_im1.append((int(arr[i][0]), int(arr[i][1])))
 
-for i in range(12, 24):
+for i in range(16, 32):
 	lis_im2.append((int(arr[i][0]), int(arr[i][1])))
 
 
@@ -34,14 +34,16 @@ def draw_circle2(event,x,y,flags,param):
 img1 = cv.imread(sys.argv[1])
 img2 = cv.imread(sys.argv[2])
 
-y_dest = min(img1.shape[0], img2.shape[0])
-x_dest = min(img1.shape[1], img2.shape[1])
+# y_dest = min(img1.shape[0], img2.shape[0])
+# x_dest = min(img1.shape[1], img2.shape[1])
+y_dest = 600
+x_dest = 500
 
-# resized_img1 = cv.resize(img1, (x_dest, y_dest)) 
-# resized_img2 = cv.resize(img2, (x_dest, y_dest))
+resized_img1 = cv.resize(img1, (x_dest, y_dest)) 
+resized_img2 = cv.resize(img2, (x_dest, y_dest))
 
-resized_img1 = img1.copy()
-resized_img2 = img2.copy()
+# resized_img1 = img1.copy()
+# resized_img2 = img2.copy()
 
 display_img1 = resized_img1.copy()
 display_img2 = resized_img2.copy()
